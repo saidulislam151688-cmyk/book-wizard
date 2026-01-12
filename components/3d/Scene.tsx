@@ -4,7 +4,6 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment, PerspectiveCamera } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import { Suspense, lazy } from "react";
-import LoadingScreen from "./LoadingScreen";
 
 // Lazy load heavy components
 const LuxuryRoom = lazy(() => import("./LuxuryRoom"));
@@ -47,7 +46,6 @@ export default function Scene() {
                     rotation={[0, 0, 0]}
                     color="#4A148C"
                 />
-                <LoadingScreen />
             </Suspense>
 
 
