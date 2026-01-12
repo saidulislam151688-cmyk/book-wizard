@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useEffect, useState } from "react";
-import { RoundedBox, Text, Float, Trail } from "@react-three/drei";
+import { useRef, useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Color, Group, MathUtils } from "three";
+import { RoundedBox, Text, Float } from "@react-three/drei";
+import { Group, MeshStandardMaterial, Color } from "three";
 import gsap from "gsap";
 import { useWizardStore } from "@/lib/wizard-store";
 
@@ -17,178 +17,241 @@ interface BookProps {
 export default function InteractiveBook({ position, rotation = [0, 0, 0], color = "#ffffff" }: BookProps) {
     const groupRef = useRef<Group>(null);
     const coverRef = useRef<any>(null);
-    const { currentStep, isWriting, tempInput, getAnswer } = useWizardStore();
+    
+    // Selective subscriptions to prevent unnecessary re-renders
+    const currentStep = useWizardStore(state => state.currentStep);
+    const getAnswer = useWizardStore(state => state.getAnswer);
 
-    // Derived content
-    const bookTitle = currentStep === "BOOK_TITLE" ? (tempInput || getAnswer("BOOK_TITLE") || "Untitled Book") : (getAnswer("BOOK_TITLE") || "Untitled Book");
-    const bookType = getAnswer("BOOK_TYPE") || "Generic";
+    // Animation states
+    const [isHero, setIsHero] = useState(false);
+    const [flippedPages, setFlippedPages] = useState<number>(0);
 
-    // Dynamic visibility for pages
-    const showChapters = ["CHAPTER_NAMES", "COMPLETE"].includes(currentStep);
-    const flippedCount = currentStep === "COMPLETE" ? 3 : (currentStep === "CHAPTER_NAMES" ? 1 : 0);
-
-    // Initial position on desk vs Hero position
-    const isHero = currentStep !== "INIT";
-    const heroPosition: [number, number, number] = [0, 1.5, 4];
-    const heroRotation: [number, number, number] = [0, 0, 0];
+    // Derived data for display
+    const bookType = getAnswer("BOOK_TYPE") || "";
+    const chapterNames = [...(getAnswer("CHAPTER_NAMES") || [])];
 
     useEffect(() => {
         if (!groupRef.current) return;
 
-        if (isHero) {
-            // Cinematic float up
+        // Transition to Hero shot when wizard starts
+        if (currentStep !== "INIT" && !isHero) {
+            setIsHero(true);
+            gsap.killTweensOf(groupRef.current.position);
+            gsap.killTweensOf(groupRef.current.rotation);
+            
             gsap.to(groupRef.current.position, {
-                x: heroPosition[0],
-                y: heroPosition[1],
-                z: heroPosition[2],
-                duration: 1.5,
-                ease: "power3.out"
+                x: 0,
+                y: 1.5,
+                z: 4,
+                duration: 1.2,
+                ease: "power2.inOut"
             });
             gsap.to(groupRef.current.rotation, {
-                x: heroRotation[0],
-                y: heroRotation[1],
-                z: heroRotation[2],
-                duration: 1.5,
-                ease: "power3.out"
+                x: 0.2, // Slight tilt for readability
+                y: 0,
+                z: 0,
+                duration: 1.2,
+                ease: "power2.inOut"
             });
-        } else {
-            // Return to desk
+        } else if (currentStep === "INIT" && isHero) {
+            setIsHero(false);
+            gsap.killTweensOf(groupRef.current.position);
+            gsap.killTweensOf(groupRef.current.rotation);
+
             gsap.to(groupRef.current.position, {
                 x: position[0],
                 y: position[1],
                 z: position[2],
-                duration: 1.2,
+                duration: 1,
                 ease: "power2.inOut"
             });
             gsap.to(groupRef.current.rotation, {
-               x: rotation[0],
-               y: rotation[1],
-               z: rotation[2],
-                duration: 1.2,
+                x: rotation[0],
+                y: rotation[1],
+                z: rotation[2],
+                duration: 1,
                 ease: "power2.inOut"
             });
         }
-    }, [isHero, position, rotation]);
 
-    // Floating effect when in Hero mode
+        // Automatic page flip logic based on progress
+        if (currentStep === "CHAPTER_NAMES") {
+            setFlippedPages(1);
+        } else if (currentStep === "COMPLETE") {
+            setFlippedPages(2);
+        } else {
+            setFlippedPages(0);
+        }
+    }, [currentStep, isHero, position, rotation]);
+
     useFrame((state) => {
-        if (isHero && groupRef.current) {
-            const t = state.clock.getElapsedTime();
-            groupRef.current.position.y = heroPosition[1] + Math.sin(t * 0.5) * 0.05;
-            groupRef.current.rotation.z = Math.sin(t * 0.3) * 0.02;
-            groupRef.current.rotation.y = Math.sin(t * 0.2) * 0.03;
+        if (groupRef.current && isHero) {
+            // Subtle floating effect in hero mode
+            groupRef.current.position.y = 1.5 + Math.sin(state.clock.elapsedTime * 1.5) * 0.04;
+            groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.015;
         }
     });
 
     return (
         <group ref={groupRef} position={position} rotation={rotation}>
-            <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-                {/* Book Cover */}
-                <mesh castShadow ref={coverRef}>
-                    <boxGeometry args={[1.2, 1.6, 0.15]} />
-                    <meshStandardMaterial color={color} roughness={0.3} metalness={0.2} />
+            {/* Book Body */}
+            <group>
+                {/* Front Cover */}
+                <RoundedBox
+                    ref={coverRef}
+                    args={[0.65, 0.08, 0.9]}
+                    radius={0.02}
+                    smoothness={2} // Reduced from 4 for performance
+                    castShadow
+                    receiveShadow
+                >
+                    <meshStandardMaterial
+                        color={color}
+                        roughness={0.4}
+                        metalness={0.1}
+                    />
+                </RoundedBox>
 
-                    {/* Book Type Label */}
+                {/* Cover Text (Title) - Isolated in sub-component */}
+                <group position={[0, 0.05, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                    <BookTitleText bookTitleStatic={getAnswer("BOOK_TITLE") || ""} />
+
+                    {/* Corner Label (Type) */}
                     <Text
-                        position={[0.4, 0.6, 0.08]}
-                        fontSize={0.06}
-                        color="white"
-                        font="/fonts/Inter-Bold.ttf"
-                        anchorX="center"
-                        anchorY="middle"
-                        fillOpacity={0.8}
+                        position={[0.2, -0.35, 0]}
+                        fontSize={0.03}
+                        color="#ffffff"
+                        fillOpacity={0.7}
+                        textAlign="right"
                     >
-                        {bookType.toUpperCase()}
+                        {bookType}
                     </Text>
-
-                    {/* Book Title */}
-                    <Text
-                        position={[0, 0, 0.08]}
-                        fontSize={0.12}
-                        color="#FFD700"
-                        font="/fonts/Inter-Bold.ttf"
-                        maxWidth={0.8}
-                        textAlign="center"
-                        anchorX="center"
-                        anchorY="middle"
-                    >
-                        {bookTitle}
-                    </Text>
-                </mesh>
-
-                {/* Pages */}
-                <group position={[0, 0, -0.01]}>
-                    <mesh position={[0, 0, 0.05]}>
-                        <boxGeometry args={[1.1, 1.5, 0.1]} />
-                        <meshStandardMaterial color="#fffef0" />
-                    </mesh>
-
-                    {/* Animated Pages */}
-                    <DynamicPages show={showChapters} flippedCount={flippedCount} />
                 </group>
-            </Float>
+
+                {/* Pages Content Simulation */}
+                <mesh position={[0.01, 0, 0]}>
+                    <boxGeometry args={[0.62, 0.07, 0.88]} />
+                    <meshStandardMaterial color="#FFF8E1" />
+                </mesh>
+            </group>
+
+            {/* Flipping Pages */}
+            <DynamicPages flippedCount={flippedPages} chapters={chapterNames} />
         </group>
     );
 }
 
-function DynamicPages({ show, flippedCount }: { show: boolean; flippedCount: number }) {
-    if (!show) return null;
+/**
+ * Isolated component to handle the book title text.
+ * Only re-renders when tempInput or currentStep changes.
+ */
+function BookTitleText({ bookTitleStatic }: { bookTitleStatic: string }) {
+    const currentStep = useWizardStore(state => state.currentStep);
+    const tempInput = useWizardStore(state => state.tempInput);
+    
+    const displayTitle = currentStep === "BOOK_TITLE" ? tempInput : bookTitleStatic;
 
     return (
-        <group position={[0, 0, 0.06]}>
-            <FlippingPage index={0} isFlipped={flippedCount >= 1} />
-            <FlippingPage index={1} isFlipped={flippedCount >= 2} />
-            <FlippingPage index={2} isFlipped={flippedCount >= 3} />
+        <Text
+            position={[0, 0.1, 0]}
+            fontSize={0.06}
+            color="#d4af37"
+            maxWidth={0.5}
+            textAlign="center"
+            font="https://fonts.gstatic.com/s/playfairdisplay/v30/nuFvD7K_aerSgP-be73rXnhXNUEx_4gzF68YgTeWmMto.woff"
+        >
+            {displayTitle}
+        </Text>
+    );
+}
+
+function DynamicPages({ flippedCount, chapters }: { flippedCount: number, chapters: string[] }) {
+    return (
+        <group>
+            {[1, 2].map((i) => {
+                const isFlipped = flippedCount >= i;
+                return (
+                    <FlippingPage
+                        key={i}
+                        index={i}
+                        isFlipped={isFlipped}
+                        chapters={i === 1 ? chapters : null}
+                    />
+                );
+            })}
         </group>
     );
 }
 
-function FlippingPage({ index, isFlipped }: { index: number; isFlipped: boolean }) {
+function FlippingPage({ index, isFlipped, chapters }: { index: number, isFlipped: boolean, chapters: string[] | null }) {
     const pageRef = useRef<Group>(null);
-    const { tempInput, getAnswer, currentStep } = useWizardStore();
-    
-    // Chapter names preview
-    const chapterNames = getAnswer("CHAPTER_NAMES") || [];
-    const displayChapters = currentStep === "CHAPTER_NAMES" && tempInput 
-        ? [...chapterNames, tempInput] 
-        : chapterNames;
 
     useEffect(() => {
-        if (!pageRef.current) return;
-        if (isFlipped) {
+        if (pageRef.current) {
+            gsap.killTweensOf(pageRef.current.rotation);
+            gsap.killTweensOf(pageRef.current.position);
+            
             gsap.to(pageRef.current.rotation, {
-                y: -Math.PI + 0.1,
-                duration: 1.2,
-                delay: index * 0.1,
-                ease: "power2.inOut"
+                z: isFlipped ? -Math.PI * 0.9 : 0,
+                duration: 1.5,
+                ease: "power2.inOut",
+                delay: index * 0.1
             });
-        } else {
-            gsap.to(pageRef.current.rotation, {
-                y: 0,
-                duration: 1.2,
-                ease: "power2.inOut"
+            gsap.to(pageRef.current.position, {
+                y: isFlipped ? 0.04 + (index * 0.01) : 0.04 + (index * 0.002),
+                duration: 1.5
             });
         }
     }, [isFlipped, index]);
 
     return (
-        <group ref={pageRef} position={[0.55, 0, 0]}>
-            <mesh position={[-0.55, 0, 0]}>
-                <boxGeometry args={[1.1, 1.5, 0.005]} />
-                <meshStandardMaterial color="#fffef0" />
-                
-                {index === 0 && (
-                    <Text
-                        position={[-0.1, 0.3, 0.01]}
-                        fontSize={0.07}
-                        color="#333"
-                        maxWidth={0.8}
-                        font="/fonts/Inter-Regular.ttf"
+        <group ref={pageRef} position={[-0.32, 0.04, 0]}>
+            <mesh position={[0.32, 0, 0]}>
+                <boxGeometry args={[0.6, 0.005, 0.86]} />
+                <meshStandardMaterial color="#FFFDE7" />
+
+                {/* Page Content - Isolated */}
+                {chapters ? (
+                    <PageContent chaptersStatic={chapters} />
+                ) : (
+                   index === 2 && isFlipped && (
+                     <Text
+                        position={[0, 0.003, 0]}
+                        rotation={[-Math.PI / 2, 0, 0]}
+                        fontSize={0.04}
+                        color="#2c3e50"
+                        textAlign="center"
                     >
-                        {displayChapters.length > 0 ? "Table of Contents\n\n" + displayChapters.join("\n") : "Writing..."}
+                        THE END
                     </Text>
+                   )
                 )}
             </mesh>
         </group>
+    );
+}
+
+function PageContent({ chaptersStatic }: { chaptersStatic: string[] }) {
+    const tempInput = useWizardStore(state => state.tempInput);
+    const currentStep = useWizardStore(state => state.currentStep);
+    
+    const displayContent = [...chaptersStatic];
+    if (currentStep === "CHAPTER_NAMES" && tempInput) {
+        displayContent.push(tempInput);
+    }
+
+    return (
+        <Text
+            position={[0, 0.003, 0]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            fontSize={0.025}
+            color="#2c3e50"
+            maxWidth={0.5}
+            textAlign="left"
+            anchorX="center"
+            anchorY="middle"
+        >
+            {displayContent.join("\n")}
+        </Text>
     );
 }

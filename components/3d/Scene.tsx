@@ -55,22 +55,22 @@ export default function Scene() {
                 position={[5, 5, -3]}
                 intensity={0.3}
                 castShadow
-                shadow-mapSize-width={512}
-                shadow-mapSize-height={512}
-                shadow-bias={-0.0001}
+                shadow-mapSize-width={256} // Reduced from 512
+                shadow-mapSize-height={256}
+                shadow-bias={-0.001}
             />
 
             {/* Post Processing Effects - Lighter */}
             <EffectComposer multisampling={0} enableNormalPass={false}>
                 <Bloom
-                    intensity={0.8}
-                    luminanceThreshold={0.3}
+                    intensity={0.4} // Reduced from 0.8
+                    luminanceThreshold={0.5} // Increased to catch only brightest spots
                     luminanceSmoothing={0.9}
                     mipmapBlur
                 />
                 <Vignette
-                    offset={0.3}
-                    darkness={0.5}
+                    offset={0.4}
+                    darkness={0.4}
                 />
             </EffectComposer>
 

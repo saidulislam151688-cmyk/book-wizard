@@ -57,12 +57,11 @@ export default function LuxuryRoom() {
                 <Sofa position={[-2.5, 0, 1]} rotation={[0, Math.PI / 2, 0]} />
                 {/* Coffee Table */}
                 <group position={[-1, 0.2, 1]}>
-                    <RoundedBox args={[1.5, 0.4, 1.5]} radius={0.05} smoothness={4}>
-                        <meshPhysicalMaterial
+                    <RoundedBox args={[1.5, 0.4, 1.5]} radius={0.05} smoothness={2}>
+                        <meshStandardMaterial
                             color="#1a1a1a"
-                            roughness={0.1}
-                            metalness={0.2}
-                            clearcoat={1}
+                            roughness={0.2}
+                            metalness={0.5}
                         />
                     </RoundedBox>
                 </group>
@@ -85,13 +84,11 @@ export default function LuxuryRoom() {
 
             {/* CENTER: Main Executive Desk */}
             <group position={[0, 0, 2]}> {/* Moved forward slightly */}
-                <RoundedBox args={[5, 0.15, 2.5]} radius={0.05} smoothness={8} position={[0, 0.75, 0]} castShadow receiveShadow>
-                    <meshPhysicalMaterial
+                <RoundedBox args={[5, 0.15, 2.5]} radius={0.05} smoothness={4} position={[0, 0.75, 0]} castShadow receiveShadow>
+                    <meshStandardMaterial
                         color="#111111"
-                        roughness={0.1}
+                        roughness={0.2}
                         metalness={0.1}
-                        clearcoat={1}
-                        clearcoatRoughness={0.1}
                     />
                 </RoundedBox>
 

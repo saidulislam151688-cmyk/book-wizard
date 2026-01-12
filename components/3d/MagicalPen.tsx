@@ -67,14 +67,14 @@ export default function MagicalPen() {
                     />
                 </Sphere>
 
-                {/* Magic Ink Trail */}
+                {/* Magic Ink Trail - Optimized length and performance */}
                 <Trail
-                    width={0.5}
-                    length={3}
+                    width={0.4}
+                    length={1.2} // Reduced from 3
                     color="#a29bfe"
                     attenuation={(t) => t * t}
                 >
-                    <Sphere args={[0.005]} />
+                    <Sphere args={[0.004]} />
                 </Trail>
             </Float>
         </group>

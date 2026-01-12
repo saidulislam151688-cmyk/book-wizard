@@ -11,7 +11,7 @@ import * as THREE from "three";
  */
 export default function CameraController() {
     const { camera } = useThree();
-    const { currentStep } = useWizardStore();
+    const currentStep = useWizardStore(state => state.currentStep);
 
     const targetPosition = useRef(new Vector3(0, 2, 8));
     const targetRotation = useRef(new Euler(0, 0, 0));
