@@ -6,7 +6,11 @@ import { Suspense } from "react";
 // Dynamic imports for better performance
 const Scene = dynamic(() => import("@/components/3d/Scene"), {
   ssr: false,
-  loading: () => null,
+  loading: () => (
+    <div className="w-full h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+    </div>
+  ),
 });
 
 const WizardOverlay = dynamic(() => import("@/components/ui/WizardOverlay"), {
@@ -21,7 +25,7 @@ export default function Home() {
   return (
     <div className="relative w-full h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
       <LoadingScreen />
-      
+
       {/* 3D Scene Container */}
       <div className="absolute inset-0 z-0">
         <Suspense fallback={null}>

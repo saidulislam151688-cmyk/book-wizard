@@ -22,7 +22,7 @@ export default function LoadingScreen() {
             const fadeTimeout = setTimeout(() => setIsFading(true), 500);
             // Completely unmount after fade animation
             const hideTimeout = setTimeout(() => setShouldShow(false), 1500);
-            
+
             return () => {
                 clearTimeout(fadeTimeout);
                 clearTimeout(hideTimeout);
@@ -40,19 +40,19 @@ export default function LoadingScreen() {
             <div className="flex flex-col items-center justify-center p-12 bg-slate-800/50 rounded-[2.5rem] backdrop-blur-2xl border border-white/10 min-w-[340px] shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                 {/* Book Icon/Logo Animation */}
                 <div className="mb-8 relative">
-                   <div className="w-16 h-16 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
-                   <div className="absolute inset-0 flex items-center justify-center text-2xl">✨</div>
+                    <div className="w-16 h-16 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center text-2xl">✨</div>
                 </div>
 
                 {/* Progress Bar Container */}
                 <div className="w-64 h-2.5 bg-white/5 rounded-full overflow-hidden mb-6 relative">
                     {/* Glowing track */}
-                    <div 
+                    <div
                         className="h-full bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 transition-all duration-700 ease-out"
                         style={{ width: `${localProgress}%` }}
                     />
                 </div>
-                
+
                 {/* Status Text */}
                 <div className="flex flex-col items-center gap-2">
                     <div className="text-xs font-bold tracking-[0.3em] uppercase text-purple-300/80 animate-pulse">
@@ -63,9 +63,9 @@ export default function LoadingScreen() {
                     </div>
                 </div>
             </div>
-            
+
             {/* Subtle background glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full -z-10 transition-all duration-1000"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full -z-10 group-hover:bg-purple-600/20 transition-all duration-1000"></div>
         </div>
     );
 }

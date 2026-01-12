@@ -17,7 +17,7 @@ interface BookProps {
 export default function InteractiveBook({ position, rotation = [0, 0, 0], color = "#ffffff" }: BookProps) {
     const groupRef = useRef<Group>(null);
     const coverRef = useRef<any>(null);
-    
+
     // Selective subscriptions to prevent unnecessary re-renders
     const currentStep = useWizardStore(state => state.currentStep);
     const getAnswer = useWizardStore(state => state.getAnswer);
@@ -38,7 +38,7 @@ export default function InteractiveBook({ position, rotation = [0, 0, 0], color 
             setIsHero(true);
             gsap.killTweensOf(groupRef.current.position);
             gsap.killTweensOf(groupRef.current.rotation);
-            
+
             gsap.to(groupRef.current.position, {
                 x: 0,
                 y: 1.5,
@@ -148,7 +148,7 @@ export default function InteractiveBook({ position, rotation = [0, 0, 0], color 
 function BookTitleText({ bookTitleStatic }: { bookTitleStatic: string }) {
     const currentStep = useWizardStore(state => state.currentStep);
     const tempInput = useWizardStore(state => state.tempInput);
-    
+
     const displayTitle = currentStep === "BOOK_TITLE" ? tempInput : bookTitleStatic;
 
     return (
@@ -190,7 +190,7 @@ function FlippingPage({ index, isFlipped, chapters }: { index: number, isFlipped
         if (pageRef.current) {
             gsap.killTweensOf(pageRef.current.rotation);
             gsap.killTweensOf(pageRef.current.position);
-            
+
             gsap.to(pageRef.current.rotation, {
                 z: isFlipped ? -Math.PI * 0.9 : 0,
                 duration: 1.5,
@@ -214,17 +214,17 @@ function FlippingPage({ index, isFlipped, chapters }: { index: number, isFlipped
                 {chapters ? (
                     <PageContent chaptersStatic={chapters} />
                 ) : (
-                   index === 2 && isFlipped && (
-                     <Text
-                        position={[0, 0.003, 0]}
-                        rotation={[-Math.PI / 2, 0, 0]}
-                        fontSize={0.04}
-                        color="#2c3e50"
-                        textAlign="center"
-                    >
-                        THE END
-                    </Text>
-                   )
+                    index === 2 && isFlipped && (
+                        <Text
+                            position={[0, 0.003, 0]}
+                            rotation={[-Math.PI / 2, 0, 0]}
+                            fontSize={0.04}
+                            color="#2c3e50"
+                            textAlign="center"
+                        >
+                            THE END
+                        </Text>
+                    )
                 )}
             </mesh>
         </group>
@@ -234,7 +234,7 @@ function FlippingPage({ index, isFlipped, chapters }: { index: number, isFlipped
 function PageContent({ chaptersStatic }: { chaptersStatic: string[] }) {
     const tempInput = useWizardStore(state => state.tempInput);
     const currentStep = useWizardStore(state => state.currentStep);
-    
+
     const displayContent = [...chaptersStatic];
     if (currentStep === "CHAPTER_NAMES" && tempInput) {
         displayContent.push(tempInput);
