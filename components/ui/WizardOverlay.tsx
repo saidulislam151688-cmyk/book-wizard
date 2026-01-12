@@ -155,7 +155,7 @@ export default function WizardOverlay() {
                                 <button
                                     onClick={handleTextSubmit}
                                     disabled={!inputValue.trim()}
-                                    className="w-full py-4 bg- gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+                                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-purple-500/50 transition-all"
                                 >
                                     Continue →
                                 </button>
