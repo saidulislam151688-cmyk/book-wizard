@@ -35,7 +35,7 @@ export default function Scene() {
             <PerspectiveCamera makeDefault position={[0, 2, 6]} fov={65} />
 
             {/* 3D Environment with Lazy Loading */}
-            <Suspense fallback={<LoadingScreen />}>
+            <Suspense fallback={null}>
                 <CameraController />
                 <DynamicLighting />
                 <Environment preset="apartment" background={false} />
@@ -47,6 +47,7 @@ export default function Scene() {
                     rotation={[0, 0, 0]}
                     color="#4A148C"
                 />
+                <LoadingScreen />
             </Suspense>
 
 
