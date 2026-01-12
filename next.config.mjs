@@ -3,7 +3,6 @@ const nextConfig = {
     // Already using Turbopack in dev (via next dev --turbo)
 
     // Production optimizations
-    // Production optimizations
     // swcMinify is true by default in Next.js 15+
 
 
@@ -17,7 +16,7 @@ const nextConfig = {
 
     // Optimize images
     images: {
-        formats: ['image/webp', 'image/avif'],
+      formats: ['image/webp', 'image/avif'],
     },
 };
 
