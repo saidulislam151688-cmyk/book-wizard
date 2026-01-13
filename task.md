@@ -1,0 +1,57 @@
+# Task List: 3D Dynamic Book Creation Platform
+
+- [x] Project Planning & Architecture Design
+    - [x] Create `implementation_plan.md` <!-- id: 0 -->
+    - [x] Define Data Structure for Dynamic Steps <!-- id: 1 -->
+    - [x] Design 3D Scene Concepts (Library/Workshop theme) <!-- id: 2 -->
+- [x] Environment Setup
+    - [x] Create `.agent/instructions.md` with workflow rules <!-- id: 13 -->
+    - [x] Initialize Next.js project with TypeScript & Tailwind <!-- id: 3 -->
+    - [x] Install 3D dependencies (Three.js, R3F, Drei) <!-- id: 4 -->
+    - [x] Install Animation libraries (Framer Motion, GSAP) <!-- id: 5 -->
+- [x] Core Development: Frontend
+    - [x] Setup 3D Canvas and basic scene <!-- id: 6 -->
+    - [x] Implement "Wizard" State Machine (The Brain) <!-- id: 7 -->
+    - [x] Create Interactive Form Overlay Components <!-- id: 8 -->
+    - [x] Add Slider and Multi-Select inputs <!-- id: 14 -->
+    - [x] Expand wizard flow with 9+ steps <!-- id: 15 -->
+    - [x] Dynamic 3D Scene Integration <!-- id: 16 -->
+      - [x] Create SceneEffects component
+      - [x] Add camera animations based on step
+      - [x] Add lighting transitions
+- [x] Create Study Room Environment
+  - [x] Add walls, floor, ceiling (High-Fidelity)
+  - [x] Add interactive elements (Books, Lamps, Fish Tank, Sofa, Car, TV)
+  - [x] Implement lighting (Atmospheric)
+- [x] Performance Optimization
+  - [x] Use Instances for Bookshelf (Huge draw call reduction)
+  - [x] Simplify Geometry (RoundedBox -> Box where appropriate)
+  - [x] Optimize Materials (Physical -> Standard)
+  - [x] Debug Vercel Build Failure (Module Not Found)
+    - [x] Identify missing files in GitHub repo (`package.json`, `lib/validations.ts`, etc.)
+    - [x] Update `tsconfig.json` with `baseUrl: "."`
+    - [x] Delete redundant `next.config.ts` and consolidate config
+    - [x] Push comprehensive batch of all missing configuration and utility files
+    - [x] Verify successful deployment on Vercel
+- [x] Verify Live Deployment
+    - [x] Monitor Vercel build status (Success)
+    - [x] Confirm cinematic animations are live on [https://book-wizard-rust.vercel.app](https://book-wizard-rust.vercel.app)
+- [x] Fix React State Update Conflict
+    - [x] Standardize `LoadingScreen` as HTML component
+    - [x] Move `LoadingScreen` to `app/page.tsx`
+    - [x] Implement `useEffect` for progress syncing
+    - [x] Verified and pushed to GitHub
+- [x] Cinematic Animations & Visual Polish
+    - [x] Implement floating book transition (GSAP)
+    - [x] Create `MagicalPen` component with writing logic
+    - [x] Add dynamic text rendering to book model
+    - [x] Synchronize pen movement with text typing
+    - [x] Implement realistic page-flipping synced with Wizard
+    - [x] Final visual polish and lighting adjustments
+- [x] Final GitHub Push
+    - [x] Resolve build errors in production (LibraryTable prop mismatch)
+    - [x] Successful Vercel Production Redeploy (Previous)
+    - [x] Push missing 3D components (`CyberpunkCar`, `Lamp`, etc.)
+    - [ ] Verify Vercel Build (Current)
+    - [x] Commit all animation changes
+    - [x] Push to GitHub repository
